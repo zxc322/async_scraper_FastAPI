@@ -3,19 +3,18 @@ from fastapi import APIRouter, Depends
 from repositories.retrieve import Retrieve
 from db.connection import  db_connect
 from schemas import retrieve as schema_r
+from schemas import retrieve_users as schema_ru
 
 
 
 router = APIRouter()
 
-@router.get('/user/{url}')
-async def get_user(url: str, database = Depends(db_connect)):
-    crud = Retrieve(db=database)
-    user = await crud.get_user_by_profile_link(url)
-    return user
+@router.post('/users')
+async def get_users(filters: schema_ru.UsersFilter, database = Depends(db_connect), page: int = 1, limit: int = 10):
+    return await Retrieve(db=database).get_users_list(filters=filters, page=page, limit=limit)
 
 
-@router.post('/items')
+@router.post('/items', response_model=schema_r.ItemsResponse)
 async def get_items(filters: schema_r.ItemsFilter, 
     order_by: schema_r.OrderBy, 
     database = Depends(db_connect),

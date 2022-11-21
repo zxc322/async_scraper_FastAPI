@@ -61,11 +61,29 @@ class MultiFilter:
         return query
 
 
+    def retrieve_users(self):
+        query = 'SELECT user_id,\
+            name,\
+            profile_url,\
+            phone,\
+            type,\
+            listings,\
+            website_url,\
+            on_kijiji_from,\
+            avg_reply,\
+            reply_rate\
+            FROM users'
+
+        query += self.__generate_users_filters()
+        return query
+
     def __generate_filters(self):
         where = " WHERE items.item_id IS NOT NULL"
         for k, v in self.filters.items():
             if isinstance(v, list):
                 where += f" AND {k} BETWEEN '{str(v[0])}' AND '{str(v[1])}'"
+            elif v == 'is null' or v == 'is not null':
+                where += f" AND {k} {v}"
             else:
                 where += f" AND {k} = '{str(v)}'" 
         return where
@@ -78,3 +96,11 @@ class MultiFilter:
             return res[:-1]
 
 
+    def __generate_users_filters(self):
+        where = " WHERE user_id IS NOT NULL"
+        for k, v in self.filters.items():
+            if v == 'is null' or v == 'is not null':
+                where += f" AND {k} {v}"
+            else:
+                where += f" AND {k} = '{str(v)}'" 
+        return where

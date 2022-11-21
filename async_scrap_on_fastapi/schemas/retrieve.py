@@ -28,6 +28,7 @@ class ItemsFilter(BaseModel):
     address: Optional[str]
     published_date: Optional[List[date]]
     price: Optional[List[int]]
+    phone: Optional[str]
 
     hydro: Optional[bool]
     heat: Optional[bool]
@@ -72,6 +73,7 @@ class ItemsData(BaseModel):
     address: Optional[str]
     published_date: Optional[date]
     price: Optional[int]
+    
 
     creator_id: int
     creator_name: str

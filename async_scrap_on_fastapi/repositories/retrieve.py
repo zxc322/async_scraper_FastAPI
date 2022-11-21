@@ -11,6 +11,7 @@ from typing import Optional
 import math
 
 from schemas import retrieve as schema_r
+from schemas import retrieve_users as schema_ru
 from repositories.services.pagination import paginate_data
 
 
@@ -30,9 +31,7 @@ class Retrieve(GenericInit):
         query_gen = MultiFilter(filters=filters, order_by=order_by.order_by, limit=limit, offset=skip)
         query = query_gen.retrieve_item()
         count_query = query_gen.get_count()
-        print(f'-- count query {query} ---')
         count = await self.db.fetch_one(query=count_query)
-
         count=count.total_items
 
         total_pages = math.ceil(count/limit)
@@ -54,3 +53,22 @@ class Retrieve(GenericInit):
         )
         return item
 
+
+    async def get_users_list(self, filters: schema_ru.UsersFilter, page: int = 1, limit: int = 10 ):
+
+        page = 1 if page<1 else page
+        skip = (page-1) * limit
+        end = skip + limit
+        filters = filters.dict(skip_defaults=True)
+
+        query_gen = MultiFilter(filters=filters, order_by="user_id", limit=limit, offset=skip)
+
+        query = query_gen.retrieve_users()
+        print(query)
+        count_query = query_gen.get_count()
+        count = await self.db.fetch_one(query=count_query)
+        count=count.total_items
+
+        total_pages = math.ceil(count/limit)
+        pagination = await paginate_data(page=page, count=count, total_pages=total_pages, end=end, limit=limit, url='items')
+        return schema_ru.UsersResponse(response=await self.db.fetch_all(query), pagination=pagination)

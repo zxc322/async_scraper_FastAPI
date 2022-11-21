@@ -39,8 +39,8 @@ def pages_to_parse(province: tuple):
                 asyncio.run(async_pull_all(base_urls=base_urls))
                 print(f'--- Found {scraper.total_urls} urls ---') 
                 print(f' --- good request:  {scraper.good_pages} pages , bad response: {scraper.bad_pages} ---')
-                print('sleeping 10...')
-                time.sleep(10)
+                print('sleeping 15...')
+                time.sleep(15)
 
 
 
