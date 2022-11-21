@@ -20,11 +20,11 @@ def chose_region():
         print(f'{k} => {v}')
 
     while True:
-        province_id = int(input('Number (0<n<11): '))
-        if province_id > 0 and province_id < 11:
-            return LOCATIONS.get(province_id)
-        elif province_id == 'all':
+        province_id = input('Number (0<n<11): ')
+        if province_id == 'all':
             return [LOCATIONS[x] for x in range(1, 11)]
+        elif province_id.isnumeric() and (int(province_id) > 0 and int(province_id) < 11):
+            return LOCATIONS.get(int(province_id))
     
 
 def pages_to_parse(province: tuple):
@@ -37,7 +37,7 @@ def pages_to_parse(province: tuple):
                     province[0], page, province[1]) for page in range(start, end))
             
                 asyncio.run(async_pull_all(base_urls=base_urls))
-                print(f'--- finished {time.time()-start}. Found {scraper.total_urls} urls ---') 
+                print(f'--- Found {scraper.total_urls} urls ---') 
                 print(f' --- good request:  {scraper.good_pages} pages , bad response: {scraper.bad_pages} ---')
                 print('sleeping 10...')
                 time.sleep(10)
@@ -54,7 +54,7 @@ if __name__ == "__main__":
             pages_to_parse(province=reg)
     else:
         pages_to_parse(province=province)
-
+    print(f'--- finished {time.time()-start_time}. Found {scraper.total_urls} urls ---')
 
         
 

@@ -61,7 +61,8 @@ class BS4Parse:
                 r = json.loads(r.text)
                 print('\n phoneResponse', r, '\n\n')
                 phone = r[0].get('data').get('getDynamicPhoneNumber').get('local')
-            except:
+            except Exception as ex:
+                print('[ERROR] phone number: ', ex)
                 phone = None
             return phone
 

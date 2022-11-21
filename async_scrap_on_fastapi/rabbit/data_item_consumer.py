@@ -23,7 +23,8 @@ class RabbitDataConsumer:
         print(' [*] Waiting for messages. To exit press CTRL+C')
         try:
             chanel.start_consuming()
-        except:
+        except Exception as ex:
+            print('except! closing connection.', ex)
             chanel.close()
 
     

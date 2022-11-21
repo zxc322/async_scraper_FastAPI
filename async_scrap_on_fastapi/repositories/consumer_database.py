@@ -24,16 +24,16 @@ class InsertData:
 
 insert = InsertData()
 
-counter = 0
+
 
 @sync
 async def callback(ch, method, properties, item):
-    counter += 1
-    print(f'[LOG] -- got new item # {counter} --')
+    print(f'[LOG] -- new item --')
     await insert.insert_data(data=json.loads(item))
 
 if __name__ == '__main__':
     try:
+        counter = 0
         RabbitDataConsumer().consume(callback=callback)
 
     except KeyboardInterrupt:

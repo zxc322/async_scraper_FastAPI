@@ -25,11 +25,11 @@ def callback(ch, method, properties, url):
         print('^__^')
         url += '?siteLocale=en_CA' # To prevent French pages 
         scraper.urls.append(url)
-        if len(scraper.urls) > 15:
+        if len(scraper.urls) > 20:
             print(f'runing urls {scraper.urls}')
             asyncio.run(async_parse_items(scraper.urls))
-            print('sleeping 15 ...')
-            time.sleep(15)
+            print('sleeping 10 ...')
+            time.sleep(10)
             scraper.urls = list()
 
 
