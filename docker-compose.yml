@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  web:
+    container_name: web
+    build: .
+    command: python main.py
+    volumes:
+      - .:/app
+    env_file:
+      - ./.env
+    ports:
+      - ${WEB_PORT}:${WEB_PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+  
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    container_name: 'rabbitmq'
+    hostname: "rabbitmq-host"
+    env_file:
+      - ./.env
+    ports:
+        - 5672:5672
+        - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - "rabbitmq:/var/lib/rabbitmq"
+
+  postgres:
+    container_name: postgres_container
+    image: postgres:13.8
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - "postgres:/var/lib/postgresql/data"
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  pgadmin:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:6.14
+    env_file:
+      - ./.env
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: ${PGADMIN_CONFIG_SERVER_MODE}
+    volumes:
+      - "pgadmin:/var/lib/pgadmin"
+    ports:
+      - ${PGADMIN_PORT}:${PGADMIN_CONTAINER_PORT}
+    restart: unless-stopped
+
+
+
+volumes:
+  rabbitmq:
+  postgres:
+  pgadmin:
