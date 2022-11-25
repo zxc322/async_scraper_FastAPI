@@ -1,9 +1,10 @@
 from bs4 import BeautifulSoup as BS
 import re
 from typing import Optional, List
-from constants.web_data import reveal_phone_body, post_headers, post_url
 import json
-import httpx
+
+from constants.web_data import reveal_phone_body
+from scrap.bs4 import get_phone
 
 
 class BS4Parse:
@@ -55,12 +56,10 @@ class BS4Parse:
                         sellerName=await self.creator_name()
                     )
                 reveal_phone_body[0]['variables'] = variables
-                data = json.dumps(reveal_phone_body)
-                print('\n phonePostData', data, '\n\n')
-                r = httpx.post(url=post_url, data=data, headers=post_headers)
-                r = json.loads(r.text)
-                print('\n phoneResponse', r, '\n\n')
-                phone = r[0].get('data').get('getDynamicPhoneNumber').get('local')
+                phone = await get_phone.pnone_by_post_method(reveal_phone_body)
+                if not phone:
+                    token = await self.phone_token()
+                    phone = await get_phone.phone_by_token(token)   
             except Exception as ex:
                 print('[ERROR] phone number: ', ex)
                 phone = None
@@ -294,3 +293,14 @@ class BS4Parse:
             return smoke
         except:
             return False
+
+    async def phone_token(self) -> Optional[str]:
+        try:
+            script = self.soup.find('div', {'id': 'FesLoader'}).script.get_text()
+            splited = script.split(',')
+            for el in splited:
+                if 'phoneToken' in el:
+                    token = json.loads(el.replace('"phoneToken":', ''))
+                    return token
+        except:
+            return None

@@ -29,18 +29,21 @@ def chose_region():
 
 def pages_to_parse(province: tuple):
     for i in range(21, 102, 20):
-                start = i-20
-                end=i
-                print(start, '--', end)
+        start = i-20
+        end=i
+        print(start, '--', end)
 
-                base_urls = ('https://www.kijiji.ca/{}/page-{}/{}?siteLocale=en_CA'.format(
-                    province[0], page, province[1]) for page in range(start, end))
-            
-                asyncio.run(async_pull_all(base_urls=base_urls))
-                print(f'--- Found {scraper.total_urls} urls ---') 
-                print(f' --- good request:  {scraper.good_pages} pages , bad response: {scraper.bad_pages} ---')
-                print('sleeping 15...')
-                time.sleep(15)
+        base_urls = ('https://www.kijiji.ca/{}/page-{}/{}?siteLocale=en_CA'.format(
+            province[0], page, province[1]) for page in range(start, end))
+
+        # base_urls = ('https://www.kijiji.ca/{}/page-{}/{}?siteLocale=en_CA'.format(
+        #     province[0], page, province[1]) for page in range(2, 3))
+    
+        asyncio.run(async_pull_all(base_urls=base_urls))
+        print(f'--- Found {scraper.total_urls} urls ---') 
+        print(f' --- good request:  {scraper.good_pages} pages , bad response: {scraper.bad_pages} ---')
+        print('sleeping 15...')
+        time.sleep(15)
 
 
 
